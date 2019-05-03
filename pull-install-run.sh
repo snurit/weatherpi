@@ -7,7 +7,7 @@ git pull github master
 pip install -r requirements.txt
 
 # Run the python script
-if [$# -gt 0]
+if [ $# -gt 0 ]
 then
     python $1
 fi
