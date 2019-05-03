@@ -4,6 +4,8 @@
 #
 #    pip-compile requirements.txt
 #
+--extra-index-url https://www.piwheels.org/simple
+
 astroid==1.6.6
 backports.functools-lru-cache==1.5
 bme680==1.0.5
