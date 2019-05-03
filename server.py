@@ -1,5 +1,15 @@
 import bme680
 import time
+import imp
+
+try:
+    imp.find_module('RPi.GPIO')
+    import RPi.GPIO as GPIO
+except ImportError:
+    import FakeRPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(5, GPIO.OUT, initial=GPIO.LOW)
 
 try:
     sensor = bme680.BME680(bme680.I2C_ADDR_PRIMARY)
@@ -18,6 +28,7 @@ sensor.select_gas_heater_profile(0)
 
 while True:
     if sensor.get_sensor_data():
+        GPIO.output(5, GPIO.HIGH)
         output = "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH".format(sensor.data.temperature, sensor.data.pressure, sensor.data.humidity)
 
         if sensor.data.heat_stable:
@@ -27,3 +38,4 @@ while True:
             print(output)
 
     time.sleep(1)
+    GPIO.output(5, GPIO.LOW)
