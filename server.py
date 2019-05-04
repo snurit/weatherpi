@@ -23,7 +23,6 @@ if len(sys.argv) > 1:
         # When running on a remote raspberry pi
         if opt in ("-e", "--env") and arg in ("prod", "preprod"):
             try:
-                imp.find_module('RPi.GPIO')
                 import RPi.GPIO as GPIO
             except ImportError:
                 print("target is remote but RPi.GPIO was not found")
@@ -34,7 +33,6 @@ if len(sys.argv) > 1:
         # when running on a "dev" computer (cause coding on raspberry is painful)
         elif opt in ("-e", "--env") and arg =="dev":
             try:
-                imp.find_module('FakeRPi.GPIO')
                 import FakeRPi.GPIO as GPIO
             except ImportError:
                 print("target is local but FakeRPi.GPIO was not found")
@@ -43,7 +41,6 @@ else:
     # when option(s) is/are omitted
     print("No target configured. Considering running on a Raspberry PI in production mode")
     try:
-        imp.find_module('RPi.GPIO')
         import RPi.GPIO as GPIO
     except ImportError:
         print("target is remote but RPi.GPIO was not found")
