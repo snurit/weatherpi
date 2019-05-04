@@ -123,7 +123,6 @@ def switch_status_led(light_mode=''):
         return
 
 def read_sensors(sensors):
-    switch_status_led()
     # getting BME680 or raising an exception
     try:
         sensor = sensors['BME680']
@@ -139,14 +138,15 @@ def read_sensors(sensors):
 
         else:
             print(output)
-    switch_status_led()
 
 try:
     initialize_GPIO()
     sensors = initialize_sensors()
     while True:
+        switch_status_led()
         read_sensors(sensors)
         time.sleep(SENSORS_REFRESH_RATE)
+        switch_status_led()
 except KeyboardInterrupt:
     logging.info("Exiting - Keyboard interrupt")
 finally:
