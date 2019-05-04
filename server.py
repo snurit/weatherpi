@@ -137,12 +137,12 @@ def read_sensors(sensors):
             'pres': sensor.data.pressure,
             'humi': sensor.data.humidity
         }
-        output = "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH".format(sensor.data.temperature, sensor.data.pressure, sensor.data.humidity)
 
         if sensor.data.heat_stable:
             output['gazr'] = sensor.data.gas_resistance
-            print("{0},{1} Ohms".format(output, sensor.data.gas_resistance))
-    return output
+
+        return output
+    pass
 
 try:
     initialize_GPIO()
