@@ -80,13 +80,11 @@ def initialize_sensors():
             sys.exit(2)
 
     # Initializing sensors parameters only if found on I2C primary or secondary address
-    logging.debug('BME680 - Setting temperature, humidity and pressure oversample')
     sensor_bme680.set_humidity_oversample(bme680.OS_2X)
     sensor_bme680.set_pressure_oversample(bme680.OS_4X)
     sensor_bme680.set_temperature_oversample(bme680.OS_8X)
     sensor_bme680.set_filter(bme680.FILTER_SIZE_3)
 
-    logging.debug('BME680 - Enabling gaz measeurement and paramaters')
     sensor_bme680.set_gas_status(bme680.ENABLE_GAS_MEAS)
     sensor_bme680.set_gas_heater_temperature(320)
     sensor_bme680.set_gas_heater_duration(150)
@@ -125,7 +123,7 @@ def switch_status_led(light_mode):
         return
 
 def read_sensors(sensors):
-    switch_status_led('on')
+    switch_status_led()
     # getting BME680 or raising an exception
     try:
         sensor = sensors['BME680']
@@ -133,18 +131,15 @@ def read_sensors(sensors):
         logging.error('BME680 not found. Exiting...')
         sys.exit(2)
 
-    logging.debug('Attempting to read BME680 values')
     if sensor.get_sensor_data():
-        logging.debug('BME680 ready for reading. Processing ...')
         output = "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH".format(sensor.data.temperature, sensor.data.pressure, sensor.data.humidity)
 
         if sensor.data.heat_stable:
-            logging.debug('BME680 gas measurement ready for reading. Processing...')
             print("{0},{1} Ohms".format(output, sensor.data.gas_resistance))
 
         else:
             print(output)
-    switch_status_led('off')
+    switch_status_led()
 
 try:
     initialize_GPIO()
