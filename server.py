@@ -170,7 +170,7 @@ try:
                 logging.error("Tried to read %i times sensors without result. Exiting...", NUM_TRIES_READING_SENSORS)
                 GPIO.cleanup()
                 sys.exit(2)
-        time.sleep(1)
+        time.sleep(0.5)
         switch_status_led()
         time.sleep(SENSORS_REFRESH_RATE)
 
