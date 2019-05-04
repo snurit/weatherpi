@@ -123,6 +123,7 @@ def switch_status_led(light_mode=''):
         return
 
 def read_sensors(sensors):
+    output = {}
     # getting BME680 or raising an exception
     try:
         sensor = sensors['BME680']
@@ -131,20 +132,30 @@ def read_sensors(sensors):
         sys.exit(2)
 
     if sensor.get_sensor_data():
+        output = {
+            'temp': sensor.data.temperature,
+            'pres': sensor.data.pressure,
+            'humi': sensor.data.humidity
+        }
         output = "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH".format(sensor.data.temperature, sensor.data.pressure, sensor.data.humidity)
 
         if sensor.data.heat_stable:
+            output['gazr'] = sensor.data.gas_resistance
             print("{0},{1} Ohms".format(output, sensor.data.gas_resistance))
-
-        else:
-            print(output)
+    return output
 
 try:
     initialize_GPIO()
     sensors = initialize_sensors()
     while True:
         switch_status_led()
-        read_sensors(sensors)
+        values = read_sensors(sensors)
+        logging.info("{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3},{4} Ohms".format(
+            values['temp'],
+            values['pres'],
+            values['humi'],
+            values['gazr']
+        ))
         time.sleep(SENSORS_REFRESH_RATE)
         switch_status_led()
 except KeyboardInterrupt:
