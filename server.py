@@ -95,7 +95,7 @@ def initialize_sensors():
 
     return sensors
 
-def switch_status_led(light_mode):
+def switch_status_led(light_mode=''):
     try:
         if light_mode == 'blink':
             logging.debug("STATUS_LED in 'blink' mode")
