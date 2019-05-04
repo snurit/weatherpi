@@ -8,7 +8,6 @@ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 
 # Trying to import BME680 library
 try:
-    imp.find_module('bme680')
     import bme680
 except ImportError:
     logging.error("Unable to import BME680 sensor library. Check pip installation. Exiting...")
@@ -28,27 +27,30 @@ if len(sys.argv) > 1:
                 import RPi.GPIO as GPIO
             except ImportError:
                 logging.error("target is remote but RPi.GPIO was not found")
+            finally:
                 sys.exit(2)
             # If we are in testing situation, using a short refresh rate
             if arg == "preprod":
                 SENSORS_REFRESH_RATE = 1
                 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
                 logging.info("target is remote. Running in 'preprod' mode")
-        # when running on a "dev" computer (cause coding on raspberry is painful)
+        # when running on a "dev" computer (cause coding directly on raspberry pi is painful)
         elif opt in ("-e", "--env") and arg =="dev":
             try:
                 import FakeRPi.GPIO as GPIO
                 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
             except ImportError:
                 logging.error("target is local but FakeRPi.GPIO was not found")
+            finally:
                 sys.exit(2)            
 else:
     # when option(s) is/are omitted
-    logging.warning("No target configured. Considering running on a Raspberry PI in production mode")
+    logging.warning("No target environnement configured. Considering running on a Raspberry PI in 'production' mode")
     try:
         import RPi.GPIO as GPIO
     except ImportError:
         logging.error("target is remote but RPi.GPIO was not found")
+    finally:
         sys.exit(2)
 
 def initialize_GPIO():
