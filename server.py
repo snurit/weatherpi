@@ -150,7 +150,7 @@ try:
     while True:
         switch_status_led()
         values = read_sensors(sensors)
-        logging.info("{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3},{4} Ohms".format(
+        logging.info("{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
             values['temp'],
             values['pres'],
             values['humi'],
