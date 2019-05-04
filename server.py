@@ -13,12 +13,15 @@ logging.debug('Test message')
 # Trying to import BME680 library
 try:
     import bme680
+    print('BME680 imported')
 except ImportError:
+    print('Error importing BME680')
     logging.error("Unable to import BME680 sensor library. Check pip installation. Exiting...")
     sys.exit(2)
 
 # managing launching options
 if len(sys.argv) > 1:
+    print('In managing launching options')
     try:
         opts, args = getopt.getopt(sys.argv[1:], "e:", ["env="])
     except getopt.GetoptError:
