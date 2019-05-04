@@ -53,15 +53,15 @@ else:
 
 def initialize_GPIO():
     # Setting GPIO mode to BCM
+    logging.debug('Setting GPIO mode to BCM')
     GPIO.setmode(GPIO.BCM)
 
-    # Cleaning in case of a previous "dirty" escape
-    GPIO.cleanup()
-
     # Initalizing declaring status LED and setting up to LOW state
+    logging.debug("Setting STATUS_LED pin to %d", STATUS_LED_PIN)
     GPIO.setup(STATUS_LED_PIN, GPIO.OUT, initial=GPIO.LOW)
 
 def initialize_sensors():
+    logging.debug('Initializing sensors')
     sensors = {}
 
     # Trying to get BME680 sensor on I2C (Humidity, Temperature, Pressure and Air quality)
@@ -79,11 +79,13 @@ def initialize_sensors():
             sys.exit(2)
 
     # Initializing sensors parameters only if found on I2C primary or secondary address
+    logging.debug('BME680 - Setting temperature, humidity and pressure oversample')
     sensor_bme680.set_humidity_oversample(bme680.OS_2X)
     sensor_bme680.set_pressure_oversample(bme680.OS_4X)
     sensor_bme680.set_temperature_oversample(bme680.OS_8X)
     sensor_bme680.set_filter(bme680.FILTER_SIZE_3)
 
+    logging.debug('BME680 - Enabling gaz measeurement and paramaters')
     sensor_bme680.set_gas_status(bme680.ENABLE_GAS_MEAS)
     sensor_bme680.set_gas_heater_temperature(320)
     sensor_bme680.set_gas_heater_duration(150)
@@ -100,14 +102,16 @@ def read_sensors(sensors):
     try:
         sensor = sensors['BME680']
     except KeyError:
-        logging.error("BME680 not found. Exiting")
+        logging.error('BME680 not found. Exiting...')
         sys.exit(2)
 
-    logging.debug("Attempting to read BME680 values")
+    logging.debug('Attempting to read BME680 values')
     if sensor.get_sensor_data():
+        logging.debug('BME680 ready for reading. Processing ...')
         output = "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH".format(sensor.data.temperature, sensor.data.pressure, sensor.data.humidity)
 
         if sensor.data.heat_stable:
+            logging.debug('BME680 gas measurement ready for reading. Processing...')
             print("{0},{1} Ohms".format(output, sensor.data.gas_resistance))
 
         else:
@@ -115,25 +119,31 @@ def read_sensors(sensors):
     switch_status_led("off")
 
 def switch_status_led(light_mode):
-    if light_mode == "blink":
-        logging.debug("STATUS_LED in 'blink' mode")
-        while True:
+    try:
+        if light_mode == "blink":
+            logging.debug("STATUS_LED in 'blink' mode")
+            while True:
+                GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
+                time.sleep(0.5)
+                GPIO.output(STATUS_LED_PIN, GPIO.LOW)
+        elif light_mode == "off":
+            logging.debug('STATUS_LED - switching manually OFF')
+            GPIO.output(STATUS_LED_PIN, GPIO.LOW)
+        elif light_mode == "on":
+            logging.debug('STATUS_LED - switching manually ON')
             GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
-            time.sleep(0.5)
-            GPIO.output(STATUS_LED_PIN, GPIO.LOW)
-    elif light_mode == "off":
-        logging.debug('STATUS_LED - switching manually OFF')
-        GPIO.output(STATUS_LED_PIN, GPIO.LOW)
-    elif light_mode == "on":
-        logging.debug('STATUS_LED - switching manually ON')
-        GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
-    else:
-        if GPIO.input(STATUS_LED_PIN) == GPIO.HIGH:
-            logging.debug('STATUS_LED - switching OFF')
-            GPIO.output(STATUS_LED_PIN, GPIO.LOW)
-            return
-        logging.debug('STATUS_LED - switching ON')
-        GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
+        else:
+            if GPIO.input(STATUS_LED_PIN) == GPIO.HIGH:
+                logging.debug('STATUS_LED - switching OFF')
+                GPIO.output(STATUS_LED_PIN, GPIO.LOW)
+                return
+            logging.debug('STATUS_LED - switching ON')
+            GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
+        return
+    except:
+        logging.warning("problem occured with STATUS_LED switching")
+    finally:
+        return
 
 try:
     initialize_GPIO()
@@ -143,5 +153,6 @@ try:
         time.sleep(SENSORS_REFRESH_RATE)
 except KeyboardInterrupt:
     print("Exiting - Keyboard interrupt")
+finally:
     GPIO.cleanup()
     sys.exit()
