@@ -5,6 +5,7 @@ SENSORS_REFRESH_RATE = 60
 STATUS_LED_PIN = 5
 
 logging.basicConfig(level=logging.DEBUG)
+logging.error('Test message')
 
 # Trying to import BME680 library
 try:
