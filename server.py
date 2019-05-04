@@ -4,7 +4,7 @@ import sys, getopt, imp, time, logging
 SENSORS_REFRESH_RATE = 60
 STATUS_LED_PIN = 5
 
-logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 # Trying to import BME680 library
 try:
