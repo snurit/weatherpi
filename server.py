@@ -3,6 +3,7 @@ import sys, getopt, imp, time, logging, threading
 # Declaring constants
 SENSORS_REFRESH_RATE = 60
 STATUS_LED_PIN = 5
+NUM_TRIES_READING_SENSORS = 10
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -147,9 +148,10 @@ def read_sensors(sensors):
 try:
     initialize_GPIO()
     sensors = initialize_sensors()
+    reading_tries = 0
+
     while True:
         switch_status_led()
-        
         try:
             values = read_sensors(sensors)
             logging.info("{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
@@ -158,8 +160,14 @@ try:
                 values['humi'],
                 values['gazr']
             ))
-        except Exception as ex:
-            logging.error("An exception of type {0} occurred. Arguments:\n{1!r}".format(type(ex).__name__, ex.args))
+        except:
+            if reading_tries < NUM_TRIES_READING_SENSORS:
+                logging.info('Sensor may be not ready. Retrying')
+                reading_tries += 1
+            else:
+                logging.error("Tried to read %i times sensors without result. Exiting...", NUM_TRIES_READING_SENSORS)
+                GPIO.cleanup()
+                sys.exit(2)
 
         time.sleep(SENSORS_REFRESH_RATE)
         switch_status_led()
