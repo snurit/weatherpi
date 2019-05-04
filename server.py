@@ -5,28 +5,22 @@ SENSORS_REFRESH_RATE = 60
 STATUS_LED_PIN = 5
 
 logging.basicConfig(level=logging.DEBUG)
-logging.error('Test message')
-logging.warning('Test message')
-logging.info('Test message')
-logging.debug('Test message')
 
 # Trying to import BME680 library
 try:
     import bme680
-    print('BME680 imported')
 except ImportError:
-    print('Error importing BME680')
     logging.error("Unable to import BME680 sensor library. Check pip installation. Exiting...")
     sys.exit(2)
 
 # managing launching options
 if len(sys.argv) > 1:
-    print('In managing launching options')
     try:
         opts, args = getopt.getopt(sys.argv[1:], "e:", ["env="])
     except getopt.GetoptError:
         print("server.py -e <environment>")
         sys.exit(2)
+
     for opt, arg in opts:
         # When running on a remote raspberry pi
         if opt in ("-e", "--env") and arg in ("prod", "preprod"):
@@ -34,7 +28,6 @@ if len(sys.argv) > 1:
                 import RPi.GPIO as GPIO
             except ImportError:
                 logging.error("target is remote but RPi.GPIO was not found")
-            finally:
                 sys.exit(2)
             # If we are in testing situation, using a short refresh rate
             if arg == "preprod":
@@ -49,7 +42,6 @@ if len(sys.argv) > 1:
                 logging.info('target is local dev computer. Running in dev mode')
             except ImportError:
                 logging.error("target is local but FakeRPi.GPIO was not found")
-            finally:
                 sys.exit(2)            
 else:
     # when option(s) is/are omitted
@@ -58,7 +50,6 @@ else:
         import RPi.GPIO as GPIO
     except ImportError:
         logging.error("target is remote but RPi.GPIO was not found")
-    finally:
         sys.exit(2)
 
 def initialize_GPIO():
@@ -162,7 +153,7 @@ try:
         read_sensors(sensors)
         time.sleep(SENSORS_REFRESH_RATE)
 except KeyboardInterrupt:
-    print("Exiting - Keyboard interrupt")
+    logging.info("Exiting - Keyboard interrupt")
 finally:
     GPIO.cleanup()
     sys.exit()
