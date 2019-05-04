@@ -160,6 +160,8 @@ try:
                 values['humi'],
                 values['gazr']
             ))
+            # if no exception raised, resetting reading_tries
+            reading_tries = 0
         except:
             if reading_tries < NUM_TRIES_READING_SENSORS:
                 logging.info('Sensor may be not ready. Retrying')
