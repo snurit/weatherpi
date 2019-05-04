@@ -15,7 +15,7 @@ except ImportError:
 # managing launching options
 if len(sys.argv) > 1:
     try:
-        opts, args = getopt.getopt(sys.args[1:], "e:", ["env="])
+        opts, args = getopt.getopt(sys.argv[1:], "e:", ["env="])
     except getopt.GetoptError:
         print("server.py -e <environment>")
         sys.exit(2)
@@ -39,15 +39,15 @@ if len(sys.argv) > 1:
             except ImportError:
                 print("target is local but FakeRPi.GPIO was not found")
                 sys.exit(2)            
-        # when option(s) is/are omitted
-        else:
-            print("No target configured. Considering running on a Raspberry PI in production mode")
-            try:
-                imp.find_module('RPi.GPIO')
-                import RPi.GPIO as GPIO
-            except ImportError:
-                print("target is remote but RPi.GPIO was not found")
-                sys.exit(2)
+else:
+    # when option(s) is/are omitted
+    print("No target configured. Considering running on a Raspberry PI in production mode")
+    try:
+        imp.find_module('RPi.GPIO')
+        import RPi.GPIO as GPIO
+    except ImportError:
+        print("target is remote but RPi.GPIO was not found")
+        sys.exit(2)
 
 # Setting GPIO mode to BCM
 GPIO.setmode(GPIO.BCM)
