@@ -149,13 +149,18 @@ try:
     sensors = initialize_sensors()
     while True:
         switch_status_led()
-        values = read_sensors(sensors)
-        logging.info("{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
-            values['temp'],
-            values['pres'],
-            values['humi'],
-            values['gazr']
-        ))
+        
+        try:
+            values = read_sensors(sensors)
+            logging.info("{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
+                values['temp'],
+                values['pres'],
+                values['humi'],
+                values['gazr']
+            ))
+        except Exception as ex:
+            logging.error("An exception of type {0} occurred. Arguments:\n{1!r}".format(type(ex).__name__, ex.args))
+
         time.sleep(SENSORS_REFRESH_RATE)
         switch_status_led()
 except KeyboardInterrupt:
