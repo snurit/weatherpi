@@ -6,6 +6,9 @@ STATUS_LED_PIN = 5
 
 logging.basicConfig(level=logging.DEBUG)
 logging.error('Test message')
+logging.warning('Test message')
+logging.info('Test message')
+logging.debug('Test message')
 
 # Trying to import BME680 library
 try:
