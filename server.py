@@ -4,8 +4,9 @@ import sys, getopt, imp, time, logging
 SENSORS_REFRESH_RATE = 60
 STATUS_LED_PIN = 5
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('weatherPi')
+logger.setLevel(logging.DEBUG)
 
 # Trying to import BME680 library
 try:
@@ -33,13 +34,13 @@ if len(sys.argv) > 1:
             # If we are in testing situation, using a short refresh rate
             if arg == "preprod":
                 SENSORS_REFRESH_RATE = 1
-                logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+                logging.basicConfig(level=logging.DEBUG)
                 logger.info("target is remote. Running in 'preprod' mode")
         # when running on a "dev" computer (cause coding directly on raspberry pi is painful)
         elif opt in ("-e", "--env") and arg =="dev":
             try:
                 import FakeRPi.GPIO as GPIO
-                logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+                logging.basicConfig(level=logging.DEBUG)
                 logger.info('target is local dev computer. Running in dev mode')
             except ImportError:
                 logger.error("target is local but FakeRPi.GPIO was not found")
