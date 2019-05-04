@@ -1,4 +1,4 @@
-import sys, getopt, imp, time, logging
+import sys, getopt, imp, time, logging, threading
 
 # Declaring constants
 SENSORS_REFRESH_RATE = 60
@@ -97,8 +97,35 @@ def initialize_sensors():
 
     return sensors
 
+def switch_status_led(light_mode):
+    try:
+        if light_mode == 'blink':
+            logging.debug("STATUS_LED in 'blink' mode")
+            while True:
+                GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
+                time.sleep(0.5)
+                GPIO.output(STATUS_LED_PIN, GPIO.LOW)
+        elif light_mode == 'off':
+            logging.debug('STATUS_LED - switching manually OFF')
+            GPIO.output(STATUS_LED_PIN, GPIO.LOW)
+        elif light_mode == 'on':
+            logging.debug('STATUS_LED - switching manually ON')
+            GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
+        else:
+            if GPIO.input(STATUS_LED_PIN) == GPIO.HIGH:
+                logging.debug('STATUS_LED - switching OFF')
+                GPIO.output(STATUS_LED_PIN, GPIO.LOW)
+                return
+            logging.debug('STATUS_LED - switching ON')
+            GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
+        return
+    except:
+        logging.warning('problem occured with STATUS_LED switching')
+    finally:
+        return
+
 def read_sensors(sensors):
-    switch_status_led("blink")
+    switch_status_led('on')
     # getting BME680 or raising an exception
     try:
         sensor = sensors['BME680']
@@ -117,34 +144,7 @@ def read_sensors(sensors):
 
         else:
             print(output)
-    switch_status_led("off")
-
-def switch_status_led(light_mode):
-    try:
-        if light_mode == "blink":
-            logging.debug("STATUS_LED in 'blink' mode")
-            while True:
-                GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
-                time.sleep(0.5)
-                GPIO.output(STATUS_LED_PIN, GPIO.LOW)
-        elif light_mode == "off":
-            logging.debug('STATUS_LED - switching manually OFF')
-            GPIO.output(STATUS_LED_PIN, GPIO.LOW)
-        elif light_mode == "on":
-            logging.debug('STATUS_LED - switching manually ON')
-            GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
-        else:
-            if GPIO.input(STATUS_LED_PIN) == GPIO.HIGH:
-                logging.debug('STATUS_LED - switching OFF')
-                GPIO.output(STATUS_LED_PIN, GPIO.LOW)
-                return
-            logging.debug('STATUS_LED - switching ON')
-            GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
-        return
-    except:
-        logging.warning("problem occured with STATUS_LED switching")
-    finally:
-        return
+    switch_status_led('off')
 
 try:
     initialize_GPIO()
