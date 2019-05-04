@@ -168,9 +168,10 @@ try:
                 logging.error("Tried to read %i times sensors without result. Exiting...", NUM_TRIES_READING_SENSORS)
                 GPIO.cleanup()
                 sys.exit(2)
-
-        time.sleep(SENSORS_REFRESH_RATE)
+        time.sleep(1)
         switch_status_led()
+        time.sleep(SENSORS_REFRESH_RATE)
+
 except KeyboardInterrupt:
     logging.info("Exiting - Keyboard interrupt")
 finally:
