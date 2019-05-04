@@ -31,7 +31,7 @@ if len(sys.argv) > 1:
                 sys.exit(2)
             # If we are in testing situation, using a short refresh rate
             if arg == "preprod":
-                SENSORS_REFRESH_RATE = 1
+                SENSORS_REFRESH_RATE = 3
                 logging.basicConfig(level=logging.DEBUG)
                 logging.info("target is remote. Running in 'preprod' mode")
         # when running on a "dev" computer (cause coding directly on raspberry pi is painful)
