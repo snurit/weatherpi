@@ -36,6 +36,7 @@ while True:
 
         else:
             print(output)
+            time.sleep(1)
+            GPIO.output(5, GPIO.LOW)
 
-    time.sleep(1)
-    GPIO.output(5, GPIO.LOW)
+    time.sleep(10)
