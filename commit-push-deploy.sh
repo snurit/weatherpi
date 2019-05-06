@@ -7,4 +7,4 @@ if [ "$1" != "" ]; then
 fi
 
 # Deploying files on remote host
-rsync -rav -e "ssh -p 2222" --exclude='*.git' --exclude='commit-push-deploy.sh' --exclude=env --exclude=.* ./ pi@home.angularize.me:~/Public --progress
+rsync -rav -e "ssh -p 2222" --exclude='*.git' --exclude='*.pyc' --exclude='commit-push-deploy.sh' --exclude=env --exclude=.* ./ pi@home.angularize.me:~/Public --progress

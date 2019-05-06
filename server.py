@@ -2,18 +2,16 @@ import sys
 import getopt
 import time
 import logging
-import traceback
 
 import sensors.BME680sensor as bme680_sensor
 
 # Declaring constants
 SENSORS_REFRESH_RATE = 60
 STATUS_LED_PIN = 5
-NUM_TRIES_READING_SENSORS = 10
 
 sensors = {}
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 # managing launching options
 if len(sys.argv) > 1:
@@ -88,7 +86,7 @@ def switch_status_led(light_mode=''):
             GPIO.output(STATUS_LED_PIN, GPIO.HIGH)
         return
     except:
-        logging.warning('problem occured with STATUS_LED switching')
+        logging.warning('problem occurred with STATUS_LED switching')
     finally:
         return
 
@@ -98,33 +96,16 @@ try:
     # Add as many sensors you want in sensors
     sensors['BME680'] = bme680_sensor.BME680sensor()
 
-    reading_tries = 0
-
     while True:
         switch_status_led()
-        try:
-            for sensor_name, sensor in sensors.iteritems():
-                print(sensor.get_values())
-            # if no exception raised, resetting reading_tries
-            reading_tries = 0
-        except Exception as exc:
-            print("exception de type ", exc.__class__)
-            print("message", exc)
-            if reading_tries < NUM_TRIES_READING_SENSORS:
-                logging.info('Sensor may be not ready. Retrying')
-                reading_tries += 1
-            else:
-                logging.error("Tried to read %i times sensors without result. Exiting...", NUM_TRIES_READING_SENSORS)
-                GPIO.cleanup()
-                sys.exit(2)
-        finally:
-            time.sleep(0.5)
-            switch_status_led()
-            time.sleep(SENSORS_REFRESH_RATE)
+        for sensor_name, sensor in sensors.iteritems():
+            print(sensor.get_values())
+        # if no exception raised, resetting reading_tries
+        time.sleep(0.5)
+        switch_status_led()
+        time.sleep(SENSORS_REFRESH_RATE)
 
 except KeyboardInterrupt:
     logging.info("Exiting - Keyboard interrupt")
     GPIO.cleanup()
     sys.exit()
-except Exception:
-    print traceback.format_exc()

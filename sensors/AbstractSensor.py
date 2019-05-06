@@ -28,9 +28,5 @@ class AbstractSensor(object):
         raise NotImplementedError
 
     @abstractmethod
-    def get_instance(self):
-        raise NotImplementedError
-
-    @abstractmethod
     def __str__(self):
         raise NotImplementedError

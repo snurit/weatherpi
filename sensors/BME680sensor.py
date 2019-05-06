@@ -23,12 +23,7 @@ except ImportError:
 class BME680sensor(AbstractSensor):
 
     sensor = None
-    values = {
-        'temp': None,
-        'pres': None,
-        'hum': None,
-        'gaz': None
-    }
+    values = None
 
     def __init__(self):
         super(AbstractSensor, self).__init__()
@@ -57,28 +52,31 @@ class BME680sensor(AbstractSensor):
             self.sensor.set_gas_heater_duration(150)
             self.sensor.select_gas_heater_profile(0)
 
-            if self.sensor.get_sensor_data():
-                self.values = {
-                    'temp': self.sensor.data.temperature,
-                    'pres': self.sensor.data.pressure,
-                    'hum': self.sensor.data.humidity
-                }
-
-                if self.sensor.data.heat_stable:
-                    self.values['gaz'] = self.sensor.data.gas_resistance
         except Exception:
             logging.warning('BME680 initialization failed')
 
     def get_values(self):
+        if self.sensor.get_sensor_data():
+            self.values = {
+                'temp': self.sensor.data.temperature,
+                'pres': self.sensor.data.pressure,
+                'hum': self.sensor.data.humidity
+            }
+
+            if self.sensor.data.heat_stable:
+                self.values['gaz'] = self.sensor.data.gas_resistance
+
         return self.values
 
-    def get_instance(self):
-        return self
-
     def __str__(self):
-        return "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
-            self.values['temp'],
-            self.values['pres'],
-            self.values['hum'],
-            self.values['gaz']
-        )
+        # If we already have tried to read the sensor
+        if self.values is not None:
+            return "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
+                self.values['temp'],
+                self.values['pres'],
+                self.values['hum'],
+                self.values['gaz']
+            )
+        # Else it's probably the first reading. Getting the first result.
+        else:
+            return 'BME680 not ready yet. Please wait...'
