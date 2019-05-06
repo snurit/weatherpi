@@ -1,3 +1,4 @@
 /env
 /.vscode
 push-deploy.sh
+/.idea
