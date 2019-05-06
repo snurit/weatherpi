@@ -2,3 +2,4 @@
 /.vscode
 push-deploy.sh
 /.idea
+*.pyc

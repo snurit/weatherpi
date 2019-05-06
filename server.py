@@ -2,6 +2,7 @@ import sys
 import getopt
 import time
 import logging
+import traceback
 
 import sensors.BME680sensor as bme680_sensor
 
@@ -102,9 +103,8 @@ try:
     while True:
         switch_status_led()
         try:
-            for sensor in sensors:
-                logging.debug('Trying to print a sensor value :')
-                print(sensor.to_string())
+            for sensor_name, sensor in sensors.iteritems():
+                print(sensor.get_values())
             # if no exception raised, resetting reading_tries
             reading_tries = 0
         except Exception as exc:
@@ -126,6 +126,5 @@ except KeyboardInterrupt:
     logging.info("Exiting - Keyboard interrupt")
     GPIO.cleanup()
     sys.exit()
-except Exception as exc:
-    print("exception de type ", exc.__class__)
-    print("message", exc)
+except Exception:
+    print traceback.format_exc()

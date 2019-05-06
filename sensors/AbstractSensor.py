@@ -32,5 +32,5 @@ class AbstractSensor(object):
         raise NotImplementedError
 
     @abstractmethod
-    def to_string(self):
+    def __str__(self):
         raise NotImplementedError

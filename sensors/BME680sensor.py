@@ -23,10 +23,15 @@ except ImportError:
 class BME680sensor(AbstractSensor):
 
     sensor = None
-    values = {}
+    values = {
+        'temp': None,
+        'pres': None,
+        'hum': None,
+        'gaz': None
+    }
 
     def __init__(self):
-        super(BME680sensor, self).__init__()
+        super(AbstractSensor, self).__init__()
         try:
             self.sensor = bme680.BME680(bme680.I2C_ADDR_PRIMARY)
             logging.info("BME680 found on I2C primary address")
@@ -70,7 +75,7 @@ class BME680sensor(AbstractSensor):
     def get_instance(self):
         return self
 
-    def to_string(self):
+    def __str__(self):
         return "{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH {3} Ohms".format(
             self.values['temp'],
             self.values['pres'],
