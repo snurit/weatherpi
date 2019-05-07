@@ -23,7 +23,7 @@ class AbstractSensor(object):
         raise NotImplementedError
 
     @abstractmethod
-    def get_values(self):
+    def refresh(self):
         """Return the values read from sensors as a tuple"""
         raise NotImplementedError
 

@@ -99,7 +99,7 @@ try:
     while True:
         switch_status_led()
         for sensor_name, sensor in sensors.iteritems():
-            print(sensor.get_values())
+            print(sensor.refresh())
         # if no exception raised, resetting reading_tries
         time.sleep(0.5)
         switch_status_led()

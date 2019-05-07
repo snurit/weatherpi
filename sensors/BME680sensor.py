@@ -1,6 +1,7 @@
 from sensors.AbstractSensor import AbstractSensor
 import sys
 import logging
+import datetime
 
 try:
     import RPi.GPIO as GPIO
@@ -55,9 +56,10 @@ class BME680sensor(AbstractSensor):
         except Exception:
             logging.warning('BME680 initialization failed')
 
-    def get_values(self):
+    def refresh(self):
         if self.sensor.get_sensor_data():
             self.values = {
+                'time': datetime.datetime.now(),
                 'temp': self.sensor.data.temperature,
                 'pres': self.sensor.data.pressure,
                 'hum': self.sensor.data.humidity
